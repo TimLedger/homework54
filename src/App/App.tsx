@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
+
+const gridSize = 6;
  
 interface Item {
   hasItem: boolean;
@@ -17,6 +19,21 @@ const createItems = (): Item[] => {
 
   return items;
 };
+ 
+const Cell: React.FC<{ item: Item; onClick: () => void }> = ({ item, onClick }) => (
+  <div className={`cell ${item.clicked ? 'clicked' : ''}`} onClick={onClick}>
+    {item.clicked && item.hasItem && 'O'}
+  </div>
+);
+ 
+const Grid: React.FC<{ items: Item[]; onCellClick: (index: number) => void }> = ({ items, onCellClick }) => (
+  <div className="grid">
+    {/* Визуализация клеток с использованием компонента Cell */}
+    {items.map((item, index) => (
+      <Cell key={index} item={item} onClick={() => onCellClick(index)} />
+    ))}
+  </div>
+);
  
 const App: React.FC = () => { 
   const [items, setItems] = useState<Item[]>(createItems());
@@ -51,18 +68,8 @@ const App: React.FC = () => {
         {gameOver && <p>Элемент найден! Сбросите игру для новой попытки.</p>}
         <button onClick={handleReset}>Сбросить игру</button>
       </div>
-      <div className="grid">
-        {/* Визуализация клеток */}
-        {items.map((item, index) => (
-          <div
-            key={index}
-            className={`cell ${item.clicked ? 'clicked' : ''}`}
-            onClick={() => handleCellClick(index)}
-          >
-            {item.clicked && item.hasItem && 'O'}
-          </div>
-        ))}
-      </div>
+      {/* Визуализация игрового поля с использованием компонента Grid */}
+      <Grid items={items} onCellClick={handleCellClick} />
     </div>
   );
 };
